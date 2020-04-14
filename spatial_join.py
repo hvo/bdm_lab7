@@ -1,4 +1,5 @@
 from pyspark import SparkContext
+import sys
 
 # We perform the same task using Spark. Here we run the task in
 # parallel on each partition (chunk of data). For each task, we
@@ -73,8 +74,9 @@ def processTrips(pid, records):
     return counts.items()
 
 if __name__=='__main__':
+    fn = '/tmp/bdm/green.csv' if len(sys.argv)<2 else sys.argv[1]
     sc = SparkContext()
-    rdd = sc.textFile('/tmp/bdm/green.csv')
+    rdd = sc.textFile(fn)
     counts = rdd.mapPartitionsWithIndex(processTrips) \
         .reduceByKey(lambda x,y: x+y) \
         .collect()
