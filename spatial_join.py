@@ -80,5 +80,5 @@ if __name__=='__main__':
     counts = rdd.mapPartitionsWithIndex(processTrips) \
         .reduceByKey(lambda x,y: x+y) \
         .collect()
-    print(sorted(counts, key=lambda x: -x[1]))
+    print('\n'.join(map(repr,sorted(counts, key=lambda x: -x[1]))))
 
