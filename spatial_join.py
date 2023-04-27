@@ -50,7 +50,7 @@ def processTrips(pid, records):
     import shapely.geometry as geom
     
     # Create an R-tree index
-    proj = pyproj.Proj(init="epsg:2263", preserve_units=True)    
+    transformer = pyproj.Transformer.from_crs(4326, 2263, always_xy=True)
     index, zones = createIndex('neighborhoods.geojson')    
     
     # Skip the header
@@ -64,7 +64,7 @@ def processTrips(pid, records):
         # Only care about trips in the 10 hour
         if pdt!='10':
             continue
-        p = geom.Point(proj(float(row[3]), float(row[2])))
+        p = geom.Point(transformer.transform(float(row[3]), float(row[2])))
         
         # Look up a matching zone, and update the count accordly if
         # such a match is found
@@ -74,7 +74,7 @@ def processTrips(pid, records):
     return counts.items()
 
 if __name__=='__main__':
-    fn = '/tmp/bdm/green.csv' if len(sys.argv)<2 else sys.argv[1]
+    fn = '/shared/CUSP-GX-6002/data/green.csv' if len(sys.argv)<2 else sys.argv[1]
     sc = SparkContext()
     rdd = sc.textFile(fn)
     counts = rdd.mapPartitionsWithIndex(processTrips) \
