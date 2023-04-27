@@ -36,7 +36,7 @@ def findZone(p, index, zones):
     match = index.intersection((p.x, p.y, p.x, p.y))
     for idx in match:
         if zones.geometry[idx].contains(p):
-            return idx
+            return zones.neighborhood[idx]
     return None
 
 def processTrips(pid, records):
